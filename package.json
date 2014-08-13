@@ -1,0 +1,21 @@
+{
+  "name": "andela",
+  "version": "0.0.1",
+  "description": "Tool to import Elance data.",
+  "main": "job.js",
+  "private": true,
+  "scripts": {
+    "test": "node job.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thnkr/andela"
+  },
+  "author": "@thnkr",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.40.0",
+    "cheerio": "^0.17.0",
+    "random-ua": "0.0.4"
+  }
+}
