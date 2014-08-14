@@ -8,10 +8,11 @@ A demo Mongo instance has been set up at the address within auth. All dependenci
 ## Getting Started
 1. Open auth.json and change the password field to the one mentioned in the email. The external database will not work without this.
 2. Install dependencies:
-        npm install
+> npm install
 3. Define settings
-        node examples/many.js
+> node examples/many.js
 ##Settings
+```
         var settings = {
             model: "elance", // The model name which is also the exact method for the model class in model.js.
             type: 'many', // Each web address scrape will either have one item you are pulling from or many. You can set some logic up around this.
@@ -20,6 +21,7 @@ A demo Mongo instance has been set up at the address within auth. All dependenci
             save: false, // Resulting records saved to database on file.
             throttle: 5 // Milliseconds between subsquent requests (to decrease load on server). For additional security made this a random number between 1000-10000.
         }
+```
 Included is a *model* and *schema* for the Elance jobs page. As you crawl different page structures each page will need a schema and a model to operate.
 
 ##### Model
