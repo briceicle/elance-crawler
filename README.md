@@ -6,10 +6,10 @@ Light-weight crawler designed for distributed deployment (jobs).
 A demo Mongo instance has been set up at the address within auth. All dependencies are called from within "job.js".
 
 ## Getting Started
-- Open auth.json and change the password field to the one mentioned in the email. The external database will not work without this.
-- Install dependencies:
+(1) Open auth.json and change the password field to the one mentioned in the email. The external database will not work without this.
+(2) Install dependencies:
     npm install
-- Define settings
+(3) Define settings
     node examples/many.js
 Included is a model and schema for the Elance jobs page. Each webpage with a new structure needs a schema and a model to operate.
 
@@ -26,9 +26,9 @@ There are two examples, "one.js" and "many.js". One takes a single url, parses i
 I have not tested past 3 seconds throttle per page. Not blocked from Elance. Should you be blocked see features below.
 
 ## Development
-- I would suggest setting up a logging server. The code is basically there just need to add the push to the server.
-- There should be more validation on types regarding money and proposals. Money especially.
-- This architecture can be completely deployed on a heroku instance, with a small express server you can have them report to master. In this way you could deploy 100s which don't have to work at once, they can simply rotate amongst each-other as one or the other gets blocked.
-- I think Duration, Posted and Ends are critical. I would parse these to unix with Moment but not sure how you guys were doing it.
-- The next model and schema should be for the job page specifically. This should use the link url as the reference to extract more information for each job (status, bids, type etc.)
-- As for being blocked, I left the "privacy" option. This should also report back to a master and track DNS times. If DNS times go down, it should auto rotate to another headless server (all of this can be setup for free don't pay for an army of instances).
+(1) I would suggest setting up a logging server. The code is basically there just need to add the push to the server.
+(2) There should be more validation on types regarding money and proposals. Money especially.
+(3) This architecture can be completely deployed on a heroku instance, with a small express server you can have them report to master. In this way you could deploy 100s which don't have to work at once, they can simply rotate amongst each-other as one or the other gets blocked.
+(4) I think Duration, Posted and Ends are critical. I would parse these to unix with Moment but not sure how you guys were doing it.
+(5) The next model and schema should be for the job page specifically. This should use the link url as the reference to extract more information for each job (status, bids, type etc.)
+(6) As for being blocked, I left the "privacy" option. This should also report back to a master and track DNS times. If DNS times go down, it should auto rotate to another headless server (all of this can be setup for free don't pay for an army of instances).
