@@ -1,11 +1,16 @@
-// Andelbot: Job Management
+// Andelbot: Job Manager
 
-var Log = require('./log'),
+var Auth = require('./auth.json'),
+    Log = require('./log'),
     Model = require('./model.js'),
+    Mongo = require('./mongo.js'),
     fs = require('fs'),
     randomAgent= require('random-ua'),
-    cheerio = require('cheerio'),
     request = require('request');
+
+// Connect to the demo Mongo instance.
+var uri =  'mongodb://'+Auth.mongo.user+':'+Auth.mongo.password+'@'+Auth.mongo.host,
+    db = new Mongo(uri);
 
 var Job = function(s) {
 
@@ -35,55 +40,118 @@ var Job = function(s) {
     if (typeof(this.settings.throttle) !== 'undefined'){ this.settings.throttle = s.throttle; }
     else { this.settings.throttle = 5000; }
 
-    // Load the specified model
-    Model(s.model);
-
-    if(!Model(s.model)){
-        Log.error('Unable to find \''+ s.model +'\' in models.json.');
+    // Check if model exists, assign model object method.
+    var models = Object.keys(Model);
+    if(models.indexOf(s.model) >= 0){
+        this.settings.model = Model[s.model];
+    } else {
+        Log.error('Unable to load model for \''+ s.model + '\'');
     }
 
-    this.settings.model = Model[s.model];
+    Log.report('Job starting! '+JSON.stringify(this.settings));
 
 }
 
 Job.prototype = {
 
     get: function(url, callback){
-        var settings = this.settings, ops = {}, ua = randomAgent.generate();
+        var self = this, settings = this.settings, ops = {}, ua = randomAgent.generate();
 
-            ops.url = url;
-            if(settings.privacy){
-                ops.headers = {
-                    'User-Agent': ua
-                }
-            } else {
-                ops.headers = {
-                    'User-Agent': 'Andelbot: A light-weight web crawler based on Jquery. Respects all robots.txt. For additional policy information or to file a complaint visit: http://www.andela.co/policy/bot.html'
-                }
+        ops.url = url;
+        if(settings.privacy){
+            ops.headers = {
+                'User-Agent': ua
             }
-            console.log(ops.headers);
+        } else {
+            ops.headers = {
+                'User-Agent': 'Andelbot: A light-weight web crawler based on Jquery. Respects all robots.txt. For additional policy information or to file a complaint visit: http://www.andela.co/policy/bot.html'
+            }
+        }
+        console.log(ops.headers);
 
         request(ops, function(err, response, body){
             if(err){ callback(err); }
             callback(null, body);
         });
     },
-    parse: function(data, callback){
-        var settings = this.settings, model = settings.model;
 
-        callback(null, "done");
+    // Alias of get
+    getOne: function(url, callback){
+        var self = this;
+        self.get(url, function(err, data){
+            if(err){callback(err);}
+            callback(null, data);
+        });
+    },
 
-        // Loads the model for the current job being scraped.
+    getMany: function(urls, callback){
+        var self = this, settings = this.settings; this.urls = urls;
+        var i = setInterval(function(){
+
+                var url = urls.pop();
+                self.get(url, function(err, data){
+                    if(err){ callback(err); }
+
+                    callback(err, data);
+
+                    if(urls.length == 0){
+                        Log.report('Job complete! Exiting...');
+                        clearInterval(i);
+                        process.exit();
+                    }
+
+                });
+
+        }, settings.throttle);
 
     },
 
+    parse: function(data, callback){
+        var self = this, settings = this.settings, model = this.settings.model;
+        model(data, function(err, res){
+            if(err){ callback(err); }
+            callback(null, res);
+        });
+
+    },
+    // Saves object to Mongo.
     save: function(data, callback){
+        var self = this, settings = this.settings;
+        // Auto parses data Array or String.
+        if(data.length){
+            self.saveMany(data, function(err, res){
+                if(err){ callback(err); }
+                callback(null, res);
+            });
+        } else {
+            db.save(data, function(err, res){
+                if(err){ callback(err); }
+                callback(null, res);
+            });
+        }
         callback(true);
+    },
+
+    // Alias for save
+    saveOne: function(data, callback){
+        var self = this, settings = this.settings;
+        self.save(data, function(err, res){
+           if(err){ callback(err); }
+           callback(null, res);
+        });
+    },
+
+    saveMany: function(objs, callback){
+        var self = this, settings = this.settings;
+        objs.forEach(function(o){
+            self.save(o, function(err, data){
+               if(err){ callback(err); }
+               callback(null, data);
+            });
+        });
     }
 
 }
-
-
 
 module.exports = Job;
 
