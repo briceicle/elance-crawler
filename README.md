@@ -1,5 +1,5 @@
-Andelabot
-========
+Andela Bot
+==========
 Light-weight crawler designed for distributed deployment (jobs).
 
 ## About
