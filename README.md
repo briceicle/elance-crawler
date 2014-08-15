@@ -6,12 +6,11 @@ Light-weight crawler designed for distributed deployment (jobs).
 A demo Mongo instance has been set up at the address within auth. All dependencies are called from within "job.js".
 
 ## Getting Started
-1. Open auth.json and change the password field to the one mentioned in the email. The external database will not work without this.
-2. Install dependencies:
+- Open auth.json and change the password field to the one mentioned in the email. The external database will not work without this.
 ```
 npm install
 ```
-3. Define settings
+- Define settings
 ```
 node examples/many.js
 ```
