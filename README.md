@@ -1,4 +1,4 @@
-Andelbot
+Andelabot
 ========
 Light-weight crawler designed for distributed deployment (jobs).
 
