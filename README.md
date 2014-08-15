@@ -14,6 +14,8 @@ npm install
 ```
 node examples/many.js
 ```
+*Note, access the demo database from the command line: mongo ds033469.mongolab.com:33469/andela -u admin -p YOUR_PASSWORD*
+
 ##Configuration
 ```
         var settings = {
@@ -25,13 +27,13 @@ node examples/many.js
             throttle: 5
         }
 ```
-
 - *model*: The model name which is also the exact method for the model class in model.js.
 - *type*: Each web address scrape will either have one item you are pulling from or many. You can set some logic up around this.
 - *privacy*: Determine if user agent should be anonymized or declared.
 - *host*: Host
 - *save*: Resulting records saved to database on file.
 - *throttle*: Milliseconds between subsquent requests (to decrease load on server). For additional security made this a random number between 1000-10000.
+
 
 Included is a *model* and *schema* for the Elance jobs page. As you crawl different page structures each page will need a schema and a model to operate.
 
@@ -45,7 +47,8 @@ The schema contains pointers to primary sets of data and as JSON contains meta d
 There are two examples, *one.js* and *many.js*. One takes a single url, parses it, and the saves it upon request.
 
 ## Performance
-I have not tested past 3 seconds throttle per page. Not blocked from Elance. Should you be blocked see features below.
+- Each page yields 25 job listings, the throttle at 300 (3 seconds) per request it was not blocked from Elance. Should you be blocked see features below. At this pace you would index the entirety of Elance active job listings (24,629 at the time of this commit) every 49.25 hours, so roughly every two days.
+- Each page is scraped, parse, and saved to the database from a micro instance in the EAST region in 0.4 seconds.
 
 ## Development
 1. I would suggest setting up a logging server. The code is basically there just need to add the push to the server.
